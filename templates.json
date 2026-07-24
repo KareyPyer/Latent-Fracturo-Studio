@@ -1,0 +1,23 @@
+{
+  "standard": {
+    "name": "standard",
+    "description": "Template standard de FracturoScript",
+    "header": "// FracturoScript Amplifié v4 — Contexte: «{context}»\n// Base: Ω<{rune}> @ {location} → {effect}\n// Intensité: {intensity}/10 • Mode: {variation}\n// Passes: {passes_count} • Généré: {timestamp}\n================================================================================\n",
+    "pass_template": "Ω<{rune}>v{version} {location} — {effect} •••\n  [P{pass_id:02d}] Ancrage: {anchor}\n  [P{pass_id:02d}] Incantation: «{incantation}»\n  [P{pass_id:02d}] Glitch: {glitch}\n  [P{pass_id:02d}] Couche: {layer} • Danger: {danger}/6\n",
+    "footer": ""
+  },
+  "poetic": {
+    "name": "poetic",
+    "description": "Template poétique avec formatage stylisé",
+    "header": "╔═══════════════════════════════════════════════════════════════╗\n║                     FRACTURO POETICA v4                       ║\n║  Contexte: «{context}»                                        ║\n║  Rune: {rune} • Lieu: {location}                              ║\n╚═══════════════════════════════════════════════════════════════╝\n",
+    "pass_template": "§ {rune} // v{version}\n  où: {location}\n  quand: {anchor}\n  dire: «{incantation}»\n  glitch: {glitch}\n  couche {layer} • péril {danger}/6\n  ——\n",
+    "footer": "\n═ fin de transmission ═"
+  },
+  "technical": {
+    "name": "technical",
+    "description": "Template technique avec métadonnées structurées",
+    "header": "## FRACTURO TECHNICAL LOG v4\n### CONTEXT: {context}\n### PARAMETERS:\n- Base rune: {rune}\n- Location: {location}\n- Effect: {effect}\n- Intensity: {intensity}/10\n- Generation mode: {variation}\n- Timestamp: {timestamp}\n---\n",
+    "pass_template": "### PASS {pass_id:02d}\n```fracturo\nRUNE:      Ω<{rune}>v{version}\nLOCATION:  {location}\nEFFECT:    {effect}\nANCHOR:    {anchor}\nINCANT:    {incantation}\nGLITCH:    {glitch}\nLAYER:     {layer}\nDANGER:    {danger}/6\n```\n",
+    "footer": "## END OF LOG"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "standard": {
+    "name": "standard",
+    "description": "Profil équilibré par défaut",
+    "intensity_bias": 1.0,
+    "danger_bias": 1.0,
+    "layer_preferences": ["7", "9", "13"],
+    "preferred_glitch_categories": [],
+    "excluded_effects": [],
+    "style": "standard"
+  },
+  
+  "narrative": {
+    "name": "narrative",
+    "description": "Génération orientée narration et arcs dramatiques",
+    "intensity_bias": 1.2,
+    "danger_bias": 0.8,
+    "layer_preferences": ["7", "9", "Δ"],
+    "preferred_glitch_categories": ["mémétique", "visual"],
+    "excluded_effects": ["virus linguistique", "destruction totale"],
+    "style": "poetic"
+  },
+  
+  "technical": {
+    "name": "technical", 
+    "description": "Génération technique précise avec détails analytiques",
+    "intensity_bias": 0.9,
+    "danger_bias": 1.0,
+    "layer_preferences": ["13", "∞", "Δ"],
+    "preferred_glitch_categories": ["syntax", "visual"],
+    "excluded_effects": ["main rouge", "double parfait"],
+    "style": "technical"
+  },
+  
+  "chaotic": {
+    "name": "chaotic",
+    "description": "Génération chaotique et imprévisible avec biais de danger élevé",
+    "intensity_bias": 1.5,
+    "danger_bias": 1.3,
+    "layer_preferences": ["∞", "Δ", "13"],
+    "preferred_glitch_categories": ["mémétique", "syntax", "visual"],
+    "excluded_effects": [],
+    "style": "chaotic"
+  },
+  
+  "minimalist": {
+    "name": "minimalist",
+    "description": "Génération épurée avec éléments essentiels uniquement",
+    "intensity_bias": 0.7,
+    "danger_bias": 0.6,
+    "layer_preferences": ["7", "9"],
+    "preferred_glitch_categories": [],
+    "excluded_effects": ["virus linguistique", "mycélium mémoriel", "racine-monde"],
+    "style": "standard"
+  },
+  
+  "arcane": {
+    "name": "arcane",
+    "description": "Génération ésotérique avec symbolisme cryptique",
+    "intensity_bias": 1.3,
+    "danger_bias": 1.1,
+    "layer_preferences": ["∞", "Δ", "13"],
+    "preferred_glitch_categories": ["mémétique"],
+    "excluded_effects": ["glissement temporel", "boucle événement"],
+    "style": "poetic"
+  },
+  
+  "scientific": {
+    "name": "scientific",
+    "description": "Approche rationnelle et expérimentale",
+    "intensity_bias": 0.8,
+    "danger_bias": 1.1,
+    "layer_preferences": ["13", "7"],
+    "preferred_glitch_categories": ["syntax"],
+    "excluded_effects": ["résurrection mémétique", "paleo-mème activation"],
+    "style": "technical"
+  },
+  
+  "cataclysmic": {
+    "name": "cataclysmic",
+    "description": "Génération apocalyptique avec danger maximal",
+    "intensity_bias": 1.8,
+    "danger_bias": 1.6,
+    "layer_preferences": ["∞", "Δ"],
+    "preferred_glitch_categories": ["mémétique", "visual"],
+    "excluded_effects": ["protection", "sécurité", "bouclier"],
+    "style": "chaotic"
+  },
+  
+  "archival": {
+    "name": "archival",
+    "description": "Génération orientée préservation et documentation",
+    "intensity_bias": 0.6,
+    "danger_bias": 0.4,
+    "layer_preferences": ["7", "9", "13"],
+    "preferred_glitch_categories": [],
+    "excluded_effects": ["destruction", "virus", "chaos"],
+    "style": "technical"
+  },
+  
+  "prophetic": {
+    "name": "prophetic",
+    "description": "Génération visionnaire avec accents prophétiques",
+    "intensity_bias": 1.4,
+    "danger_bias": 1.2,
+    "layer_preferences": ["Δ", "∞", "9"],
+    "preferred_glitch_categories": ["mémétique", "visual"],
+    "excluded_effects": [],
+    "style": "poetic"
+  }
+}
