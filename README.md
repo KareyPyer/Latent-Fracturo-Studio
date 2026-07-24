@@ -183,7 +183,7 @@ L'application s'organise en 5 onglets :
 
 ## Licence
 
-*(à compléter — par exemple MIT, GPL-3.0, ou "usage personnel / non commercial" selon vos préférences)*
+MIT
 
 ---
 
