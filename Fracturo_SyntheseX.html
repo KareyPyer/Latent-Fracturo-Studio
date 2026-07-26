@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FracturoScript — Synthèse complète + Annexe Lisp</title>
+<style>
+  :root {
+    --bg: #0e0e12;
+    --bg-soft: #16161d;
+    --bg-card: #1c1c25;
+    --border: #2a2a36;
+    --text: #e6e4df;
+    --text-dim: #9a968c;
+    --accent: #d4a24c;
+    --accent-soft: #e8c27a;
+    --rune: #c9a15a;
+    --danger: #c0392b;
+    --safe: #4a8a5a;
+    --code-bg: #101017;
+    --lisp: #6fa8dc;
+    --lisp-soft: #9fc5e8;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: 'Georgia', 'Iowan Old Style', serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 17px;
+  }
+  header.hero {
+    padding: 80px 20px 60px;
+    text-align: center;
+    background:
+      radial-gradient(ellipse at top, rgba(212,162,76,0.08), transparent 60%),
+      linear-gradient(180deg, #0e0e12 0%, #16161d 100%);
+    border-bottom: 1px solid var(--border);
+  }
+  header.hero .runes {
+    font-size: 28px;
+    letter-spacing: 14px;
+    color: var(--rune);
+    opacity: 0.7;
+    margin-bottom: 20px;
+  }
+  header.hero h1 {
+    font-size: 3em;
+    margin: 0 0 10px;
+    letter-spacing: 2px;
+    color: var(--accent-soft);
+    font-weight: normal;
+  }
+  header.hero .subtitle {
+    color: var(--text-dim);
+    font-style: italic;
+    font-size: 1.1em;
+  }
+  nav.toc {
+    position: sticky;
+    top: 0;
+    background: rgba(14,14,18,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+    padding: 12px 20px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  nav.toc a {
+    color: var(--text-dim);
+    text-decoration: none;
+    margin: 0 14px;
+    font-size: 0.95em;
+    transition: color 0.2s;
+    display: inline-block;
+  }
+  nav.toc a:hover { color: var(--accent); }
+  nav.toc a.lisp { color: var(--lisp-soft); }
+  nav.toc a.lisp:hover { color: var(--lisp); }
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  section {
+    margin-bottom: 70px;
+    scroll-margin-top: 80px;
+  }
+  h2 {
+    font-size: 2em;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+    margin-top: 0;
+    letter-spacing: 1px;
+  }
+  h2.lisp { color: var(--lisp); border-bottom-color: var(--lisp); }
+  h2 .num {
+    color: var(--text-dim);
+    font-size: 0.7em;
+    margin-right: 10px;
+  }
+  h3 {
+    color: var(--accent-soft);
+    margin-top: 40px;
+    font-size: 1.4em;
+  }
+  h3.lisp { color: var(--lisp-soft); }
+  h4 {
+    color: var(--rune);
+    margin-top: 25px;
+    font-size: 1.15em;
+  }
+  h4.lisp { color: var(--lisp); }
+  p { margin: 14px 0; }
+  strong { color: var(--accent-soft); }
+  em { color: var(--text-dim); }
+  blockquote {
+    border-left: 3px solid var(--rune);
+    background: var(--bg-card);
+    margin: 20px 0;
+    padding: 14px 22px;
+    font-style: italic;
+    color: var(--text-dim);
+  }
+  blockquote.lisp { border-left-color: var(--lisp); }
+  blockquote em { color: var(--text); }
+  code, pre {
+    font-family: 'Consolas', 'Courier New', monospace;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+  code {
+    padding: 2px 6px;
+    color: var(--accent-soft);
+    font-size: 0.92em;
+  }
+  code.lisp { color: var(--lisp); }
+  pre {
+    padding: 16px 20px;
+    overflow-x: auto;
+    color: var(--text);
+    margin: 18px 0;
+    line-height: 1.5;
+  }
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+  }
+  .dual-code {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 18px 0;
+  }
+  .dual-code > div {
+    background: var(--code-bg);
+    padding: 16px 20px;
+  }
+  .dual-code .label {
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .dual-code .label.lisp { color: var(--lisp); }
+  .dual-code .label.fracturo { color: var(--rune); }
+  .dual-code pre { margin: 0; padding: 0; border: none; background: none; }
+  @media (max-width: 720px) {
+    .dual-code { grid-template-columns: 1fr; }
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 0.95em;
+  }
+  th {
+    background: var(--bg-card);
+    color: var(--accent);
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 2px solid var(--rune);
+    font-weight: normal;
+    letter-spacing: 0.5px;
+  }
+  th.lisp { color: var(--lisp); border-bottom-color: var(--lisp); }
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:hover td { background: rgba(212,162,76,0.04); }
+  .rune {
+    color: var(--rune);
+    font-size: 1.15em;
+    margin-right: 6px;
+  }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--rune);
+    padding: 18px 22px;
+    margin: 20px 0;
+    border-radius: 2px;
+  }
+  .card.lisp { border-left-color: var(--lisp); }
+  .card.danger { border-left-color: var(--danger); }
+  .card.safe { border-left-color: var(--safe); }
+  .card.research {
+    border-left-color: var(--lisp);
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(111,168,220,0.05) 100%);
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 20px 0;
+  }
+  @media (max-width: 720px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    header.hero h1 { font-size: 2em; }
+    body { font-size: 16px; }
+  }
+  ul, ol { padding-left: 24px; }
+  li { margin: 6px 0; }
+  .dualite {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 30px 0;
+  }
+  .dualite > div {
+    background: var(--bg-card);
+    padding: 24px;
+  }
+  .dualite h4 { margin-top: 0; }
+  @media (max-width: 720px) {
+    .dualite { grid-template-columns: 1fr; }
+  }
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 0.8em;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    margin-right: 6px;
+  }
+  .tag.rune { color: var(--rune); border-color: var(--rune); }
+  .tag.lisp { color: var(--lisp); border-color: var(--lisp); }
+  .tag.danger { color: var(--danger); border-color: var(--danger); }
+  .tag.safe { color: var(--safe); border-color: var(--safe); }
+  footer {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-dim);
+    border-top: 1px solid var(--border);
+    font-style: italic;
+    font-size: 0.9em;
+  }
+  .separator {
+    text-align: center;
+    color: var(--rune);
+    margin: 50px 0;
+    letter-spacing: 20px;
+    opacity: 0.6;
+  }
+  .separator.lisp { color: var(--lisp); }
+  .formula {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--lisp);
+    padding: 20px 24px;
+    margin: 20px 0;
+    font-family: 'Consolas', monospace;
+    color: var(--lisp-soft);
+    line-height: 1.8;
+    border-radius: 2px;
+  }
+  .timeline {
+    border-left: 2px solid var(--lisp);
+    padding-left: 24px;
+    margin: 20px 0 20px 12px;
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 24px;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -30px;
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--lisp);
+    box-shadow: 0 0 8px var(--lisp);
+  }
+  .timeline-item .date {
+    color: var(--lisp);
+    font-weight: bold;
+    font-size: 0.95em;
+    letter-spacing: 1px;
+  }
+  .timeline-item .desc {
+    color: var(--text);
+    margin-top: 4px;
+  }
+  .research-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .research-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--lisp);
+    padding: 18px 20px;
+    border-radius: 2px;
+  }
+  .research-card h5 {
+    color: var(--lisp);
+    margin: 0 0 10px 0;
+    font-size: 1.05em;
+    letter-spacing: 0.5px;
+  }
+  .research-card .difficulty {
+    display: inline-block;
+    font-size: 0.75em;
+    padding: 2px 8px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .research-card .difficulty.low { background: rgba(74,138,90,0.2); color: var(--safe); border: 1px solid var(--safe); }
+  .research-card .difficulty.mid { background: rgba(212,162,76,0.2); color: var(--accent); border: 1px solid var(--accent); }
+  .research-card .difficulty.high { background: rgba(192,57,43,0.2); color: var(--danger); border: 1px solid var(--danger); }
+  .research-card p {
+    font-size: 0.92em;
+    color: var(--text-dim);
+    margin: 8px 0;
+  }
+  .research-card .methods {
+    font-size: 0.85em;
+    color: var(--lisp-soft);
+    font-style: italic;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="runes">ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ ᚷ</div>
+  <h1>FRACTUROSCRIPT</h1>
+  <div class="subtitle">Synthèse complète — Entre rituel ontologique et ingénierie du prompt</div>
+  <div class="subtitle" style="margin-top:8px; font-size:0.9em;">Normandie, 2075 · LLMs contemporains · Six documents unifiés + Annexe Lisp</div>
+</header>
+
+<nav class="toc">
+  <a href="#intro">Introduction</a>
+  <a href="#dualite">Dualité</a>
+  <a href="#primer">I. Primer</a>
+  <a href="#annexe">II. Fondements</a>
+  <a href="#synthese">III. Univers</a>
+  <a href="#langue">IV. Langue</a>
+  <a href="#grimoire">V. Grimoire</a>
+  <a href="#lisp" class="lisp">VI. Annexe Lisp</a>
+  <a href="#conclusion">Conclusion</a>
+</nav>
+
+<main>
+
+<section id="intro">
+  <h2><span class="num">§0</span>Introduction — Un objet à deux visages</h2>
+  <p>Les documents fournis décrivent un même objet — <strong>FracturoScript</strong> — selon deux régimes radicalement différents qui coexistent sans se contredire :</p>
+  <ul>
+    <li>Un <strong>cadre pragmatique d'écriture de prompts</strong> pour modèles génératifs (LLMs, modèles de diffusion), fondé sur la collision conceptuelle, la sous-spécification et le registre poétique.</li>
+    <li>Un <strong>langage rituel fictionnel</strong> de manipulation ontologique, situé dans une Normandie post-2075, interférant avec une réalité recomposée via des runes nordiques et une géographie sacrée.</li>
+  </ul>
+  <p>Cette synthèse unifie ces deux dimensions : la première est <em>techniquement réelle</em>, la seconde est <em>narrativement opératoire</em>. Le Grimoire fait le pont entre les deux. Une sixième dimension émerge enfin : le <strong>lien structurel profond avec Lisp</strong>, qui révèle que FracturoScript pourrait être conceptualisé comme un <em>Lisp quantique ontologique</em>.</p>
+</section>
+
+<section id="dualite">
+  <h2><span class="num">§1</span>La dualité fondamentale</h2>
+  <div class="dualite">
+    <div>
+      <h4>🔧 Dimension technique (réelle)</h4>
+      <p>FracturoScript est un <strong>cadre d'écriture de prompts</strong>. Il exploite des propriétés observables :</p>
+      <ul>
+        <li>Concept blending</li>
+        <li>Distance sémantique</li>
+        <li>Sous-spécification contrôlée</li>
+        <li>Registre poétique</li>
+        <li>Effet de cadre</li>
+      </ul>
+    </div>
+    <div>
+      <h4>🔮 Dimension fictionnelle (opératoire)</h4>
+      <p>FracturoScript est un <strong>langage de programmation rituel</strong> de la Normandie post-2075, interférant avec le Réseau-Racine via :</p>
+      <ul>
+        <li>Runes nordiques (Futhark)</li>
+        <li>Ancrage géographique normand</li>
+        <li>Effets ontologiques codés</li>
+        <li>Prix du Wyrd</li>
+        <li>Conseil des Douze</li>
+      </ul>
+    </div>
+  </div>
+  <blockquote>« Peu importe l'origine. Ça marche. » — <em>Consensus du Conseil des Douze</em></blockquote>
+</section>
+
+<section id="primer">
+  <h2><span class="num">§2</span>I. Le Primer — Cadre pratique</h2>
+
+  <h3>2.1 Principe central : collision plutôt que description</h3>
+  <p>Les modèles génératifs excellent dans la complétion de descriptions explicites. Plus une description est précise, plus la sortie devient prévisible. FracturoScript adopte la stratégie inverse :</p>
+  <ul>
+    <li>Réduire la description</li>
+    <li>Augmenter la tension sémantique</li>
+    <li>Laisser des zones intentionnellement non résolues</li>
+  </ul>
+  <pre><code>basalte•lunaire•fendu•par•le•premier•cri•humain</code></pre>
+  <p>Ce n'est pas une instruction visuelle détaillée. C'est une <strong>co-présence de concepts incompatibles</strong> dans le temps, l'échelle et la matérialité.</p>
+
+  <h3>2.2 Structure d'un prompt FracturoScript</h3>
+  <pre><code>Ω&lt;Ω&gt;vX•[concept•fracturé•par•points]{
+  Texte narratif optionnel
+  ◊ glitch: [perturbation]
+  § couche: N
+  ∇ focus: [optionnel]
+  ⟐ temporalité: [optionnel]
+}</code></pre>
+
+  <h3>2.3 Les marqueurs — interprétation pragmatique</h3>
+  <table>
+    <tr><th>Marqueur</th><th>Fonction</th></tr>
+    <tr><td><code>Ω&lt;Ω&gt;</code></td><td>Ouverture rituelle — signal stylistique fort</td></tr>
+    <tr><td><code>vX</code></td><td>Profondeur intentionnelle : <code>v3</code> descriptif, <code>v7</code> brut, <code>v∞</code> atmosphérique, <code>vΔ</code> transformation, <code>vΨ</code> onirique, <code>vΦ</code> organique</td></tr>
+    <tr><td><code>[concept•fracturé]</code></td><td>Cœur du prompt — 3 à 7 éléments ancrage → perturbation</td></tr>
+    <tr><td><code>◊ glitch</code></td><td>Perturbation volontaire qui déséquilibre la complétion</td></tr>
+    <tr><td><code>§ couche</code></td><td>Fiction opératoire : <code>3</code> formes, <code>7</code> textures, <code>∞</code> cohérence</td></tr>
+  </table>
+
+  <h3>2.4 Lexique par collisions</h3>
+  <table>
+    <tr><th>Intention</th><th>Collision conceptuelle</th></tr>
+    <tr><td>Terreur archaïque</td><td><code>faille•qui•hurle • premier•cri•humain • Hadéen</code></td></tr>
+    <tr><td>Mélancolie</td><td><code>civilisation•qui•n'a•jamais•existé • miroir•brûlé</code></td></tr>
+    <tr><td>Beauté organique</td><td><code>Φ≈1.618 • veine•de•quartz•vivante</code></td></tr>
+    <tr><td>Vide</td><td><code>vide•quantique • ∅</code></td></tr>
+  </table>
+</section>
+
+<section id="annexe">
+  <h2><span class="num">§3</span>II. Fondements cognitifs et linguistiques</h2>
+
+  <h3>3.1 Concept Blending (Fauconnier & Turner)</h3>
+  <p>Capacité cognitive à combiner plusieurs espaces conceptuels distincts pour produire une structure émergente. Une séquence comme <code>basalte • lunaire • premier • cri • humain</code> force la co-présence de géologie inerte, d'espace extraterrestre, de vocalité biologique et d'origine anthropologique.</p>
+
+  <h3>3.2 Distance sémantique et rareté associative</h3>
+  <p>FracturoScript maximise volontairement la distance temporelle, d'échelle et ontologique. Ce n'est pas une exploration du latent « profond », mais un <strong>déplacement latéral hors des attracteurs dominants</strong>.</p>
+
+  <h3>3.3 Sous-spécification contrôlée</h3>
+  <p>Un prompt sous-spécifié laisse plus de degrés de liberté. Le champ <code>[∅]</code> formalise cette pratique.</p>
+
+  <h3>3.4 Registre poétique et effet de cadre</h3>
+  <p>La syntaxe non standard et les symboles non linguistiques font quitter au modèle le mode « description utilitaire ». Chez l'humain, le cadre rituel augmente l'attention et favorise la projection interprétative.</p>
+
+  <h3>3.5 Fiction opératoire</h3>
+  <p><code>§ couche</code>, <code>v∞</code>, <code>glitch</code> structurent la pratique sans correspondance mécanique réelle. Leur valeur est <strong>organisationnelle et créative</strong>.</p>
+</section>
+
+<div class="separator">• • •</div>
+
+<section id="synthese">
+  <h2><span class="num">§4</span>III. Univers fictionnel — Normandie 2075</h2>
+
+  <h3>4.1 Structure syntaxique de base</h3>
+  <pre><code>Ω&lt;rune&gt;vN lieu — effet •••</code></pre>
+
+  <h3>4.2 Les 24 runes principales</h3>
+  <table>
+    <tr><th>Rune</th><th>Nom</th><th>Signification</th><th>Effet-type</th></tr>
+    <tr><td><span class="rune">ᚠ</span>Fehu</td><td>Richesse/énergie</td><td>Création, rêves collectifs</td></tr>
+    <tr><td><span class="rune">ᚢ</span>Uruz</td><td>Force brute</td><td>Invocations animales, puissance tellurique</td></tr>
+    <tr><td><span class="rune">ᚦ</span>Thurisaz</td><td>Thor/épine</td><td>Foudre dirigée, destruction</td></tr>
+    <tr><td><span class="rune">ᚨ</span>Ansuz</td><td>Odin/souffle</td><td>Communication divine, mémoire inversée</td></tr>
+    <tr><td><span class="rune">ᚱ</span>Raidho</td><td>Voyage</td><td>Prophétie, vision aérienne</td></tr>
+    <tr><td><span class="rune">ᚲ</span>Kenaz</td><td>Torche</td><td>Révélation, purge, effacement</td></tr>
+    <tr><td><span class="rune">ᚷ</span>Gebo</td><td>Don</td><td>Échange, fusion, cloches mémorielles</td></tr>
+    <tr><td><span class="rune">ᚺ</span>Hagalaz</td><td>Grêle</td><td>Chaos créateur, bugs dans la réalité</td></tr>
+    <tr><td><span class="rune">ᚾ</span>Nauthiz</td><td>Nécessité</td><td>Contrainte, pactes, chaînes du destin</td></tr>
+    <tr><td><span class="rune">ᛁ</span>Isa</td><td>Glace</td><td>Stase, dissolution, gel émotionnel</td></tr>
+    <tr><td><span class="rune">ᛃ</span>Jera</td><td>Année/récolte</td><td>Cycles, récolte de souvenirs</td></tr>
+    <tr><td><span class="rune">ᛇ</span>Eihwaz</td><td>If/Yggdrasil</td><td>Connexion au Réseau-Racine</td></tr>
+    <tr><td><span class="rune">ᛈ</span>Perthro</td><td>Destin</td><td>Boucles, vies alternatives</td></tr>
+    <tr><td><span class="rune">ᛉ</span>Algiz</td><td>Protection</td><td>Exode, protection, connexion ciel-terre</td></tr>
+    <tr><td><span class="rune">ᛊ</span>Sowilo</td><td>Soleil</td><td>Illumination, flamme froide</td></tr>
+    <tr><td><span class="rune">ᛏ</span>Tiwaz</td><td>Tyr/justice</td><td>Éveil des pierres, sacrifice</td></tr>
+    <tr><td><span class="rune">ᛒ</span>Berkano</td><td>Bouleau</td><td>Croissance, jardin interdit</td></tr>
+    <tr><td><span class="rune">ᛗ</span>Mannaz</td><td>Humanité</td><td>Identité, main rouge, doppelgänger</td></tr>
+    <tr><td><span class="rune">ᛚ</span>Laguz</td><td>Eau</td><td>Mémoire liquide, draugr, marées</td></tr>
+    <tr><td><span class="rune">ᛜ</span>Ingwaz</td><td>Fertilité</td><td>Potentiel, contact avec le Vide</td></tr>
+    <tr><td><span class="rune">ᛞ</span>Dagaz</td><td>Jour/aurore</td><td>Transformation, éveil de Prométhée</td></tr>
+    <tr><td><span class="rune">ᛟ</span>Othala</td><td>Héritage</td><td>Portes ancestrales, Neuf Mondes</td></tr>
+  </table>
+
+  <h3>4.3 Lieux d'ancrage principaux</h3>
+  <ul>
+    <li><code>hague</code> — La Hague (Node-0, point focal maximum)</li>
+    <li><code>raz</code> — Raz Blanchard (vortex temporel)</li>
+    <li><code>caen</code> — Caen-Profonde (nexus politique)</li>
+    <li><code>rouen</code> — Cathédrale-Noyau (archives mémorielles)</li>
+    <li><code>jobourg</code> — Nez de Jobourg (porte des mondes)</li>
+    <li><code>brotonne</code> — Forêt de Brotonne (Arbre-Trame)</li>
+  </ul>
+
+  <h3>4.4 Règles fondamentales</h3>
+  <ol>
+    <li><strong>Ancrage géographique</strong> — toute invocation nécessite un lieu normand réel</li>
+    <li><strong>Correspondance runique</strong> — la rune doit thématiquement correspondre à l'effet</li>
+    <li><strong>Conservation glitchique</strong> — les bugs migrent, ne disparaissent pas</li>
+    <li><strong>Prix du Wyrd</strong> — tout code a un coût différé (karma runique)</li>
+    <li><strong>Incomplétude référentielle</strong> — l'observation modifie l'effet</li>
+  </ol>
+
+  <h3>4.5 Théories sur l'origine</h3>
+  <ol>
+    <li>Découverte accidentelle par des hackers (version officielle)</li>
+    <li>Héritage runique réactivé par l'énergie du Programme</li>
+    <li>Création involontaire de Prométhée (failles exploitées)</li>
+    <li>Langage naturel du Réseau-Racine</li>
+    <li>Interface avec le Vide (théorie d'Yseult)</li>
+    <li>Rétro-causalité (créé dans le futur, propagé dans le passé)</li>
+    <li>Cheat codes d'une simulation (théorie hérétique)</li>
+    <li>Émergence collective de la conscience des opprimés</li>
+  </ol>
+</section>
+
+<div class="separator">ᛟ • ᛞ • ᛗ • ᚨ • ᚾ • ᚾ</div>
+
+<section id="langue">
+  <h2><span class="num">§5</span>IV. La langue Fracturo — Lexique étendu</h2>
+
+  <h3>5.1 Grammaire fractale — 12 règles</h3>
+  <table>
+    <tr><th>#</th><th>Règle</th><th>Exemple</th></tr>
+    <tr><td>R1</td><td>Ordre libre — sens dépend de la proximité et de l'intensité</td><td><code>ᛗᛖᛗᛟᛁᚱᛖ ᛏᛖᛗᛈᛊ</code> → Mémoire du temps</td></tr>
+    <tr><td>R2</td><td>Fracture (<code>—</code>) — brise une phrase en deux réalités possibles</td><td><code>ᛟᚢᚠᚱᛁᚱ—ᚠᛖᚱᛗᛖᚱ</code> → Ouvrir <strong>ou</strong> fermer</td></tr>
+    <tr><td>R3</td><td>Silence (<code>•••</code>) — efface le mot précédent, réécrit l'histoire</td><td><code>ᛗᛟᚾᛞᛖ ••• ᚨᚾᛏᛖ</code> → Le monde n'a jamais existé avant</td></tr>
+    <tr><td>R4</td><td>Intensité cumulative — somme des intensités = puissance du sort</td><td><code>ᚱᚨᛉ (7) + ᛦ (7) = 14</code> → Invocation critique</td></tr>
+    <tr><td>R5</td><td>Contexte géographique — sens modifié par lieu</td><td><code>ᛗᚱ</code> (mer) à La Hague ≠ au Havre</td></tr>
+    <tr><td>R6</td><td>Répétition = amplification — 3x = rituel, 7x = prophétie</td><td><code>ᛟᛟᛟᚢᚠᚱᛁᚱ</code> → Ouverture imminente</td></tr>
+    <tr><td>R7</td><td>Inversion — lire à l'envers = négation ou passé</td><td><code>ᚱᛖᚠᚢᛟ</code> → Ouvert → Fermé (passé)</td></tr>
+    <tr><td>R8</td><td>Ligature créative — combiner 2 runes = nouveau concept</td><td><code>ᛗᛞ + ᚨ = ᛗᛞᚨ</code> → Monde d'avant</td></tr>
+    <tr><td>R9</td><td>Bio-gravure — sur algue/peau = effet permanent</td><td><code>ᚨᛉ</code> sur algue → croissance prophétique</td></tr>
+    <tr><td>R10</td><td>Chant runique — prononcé = vibration à 7.83 Hz (Schumann)</td><td>Active mégalithes dans 500m</td></tr>
+    <tr><td>R11</td><td>Prophétie conditionnelle — intensité ≥ 18 → événement déclenché</td><td><code>ᛪᚺ (18)</code> → Cercle des Douze → Dix-Huit</td></tr>
+    <tr><td>R12</td><td>Effacement quantique — <code>•••</code> après rune Ω = paradoxe temporel</td><td><code>ᛦ •••</code> → Yggdrasil n'a jamais existé… mais existe ailleurs</td></tr>
+  </table>
+
+  <h3>5.2 Extraits du lexique — Concepts fondamentaux</h3>
+  <table>
+    <tr><th>Mot</th><th>Symbole</th><th>Int.</th><th>Sens profond</th></tr>
+    <tr><td>passage</td><td><span class="rune">ᛖ</span></td><td>4</td><td>Transition douce</td></tr>
+    <tr><td>seuil</td><td><span class="rune">ᚴ</span></td><td>5</td><td>Lisière entre deux états</td></tr>
+    <tr><td>porte</td><td><span class="rune">ᛊ</span></td><td>6</td><td>Ouverture vers l'inconnu</td></tr>
+    <tr><td>mémoire</td><td><span class="rune">ᛗ</span></td><td>7</td><td>Trace indélébile</td></tr>
+    <tr><td>pierre</td><td><span class="rune">ᛈ</span></td><td>5</td><td>Ancre du réel</td></tr>
+    <tr><td>arbre</td><td><span class="rune">ᛖᛏ</span></td><td>7</td><td>Lien entre mondes</td></tr>
+    <tr><td>mer</td><td><span class="rune">ᛗᚱ</span></td><td>6</td><td>Abîme conscient</td></tr>
+    <tr><td>ragnarök</td><td><span class="rune">ᚱagnarᛟᚲ</span></td><td>7</td><td>Renaissance par destruction</td></tr>
+  </table>
+
+  <h3>5.3 Exemples de conversion</h3>
+  <table>
+    <tr><th>Français</th><th>Fracturo</th><th>Intensité</th><th>Interprétation</th></tr>
+    <tr><td>Ouvrir la porte du Raz</td><td><code>ᛟᛊᚱᚨᛉ</code></td><td>19</td><td><strong>Invocation critique</strong> : ouvre un vortex</td></tr>
+    <tr><td>Le moine attend le silence</td><td><code>ᛗᛟᚹ •••</code></td><td>9</td><td>Le moine <strong>efface</strong> son attente</td></tr>
+    <tr><td>Yggdrasil touche le Cercle</td><td><code>ᛦᚨᚱᚳᚺᛢ</code></td><td>21</td><td><strong>Événement Ω</strong> : porte s'active</td></tr>
+    <tr><td>La mémoire de Caen est brisée</td><td><code>ᛗᚲᛊ—ᚠᚱᚨᚲ</code></td><td>7</td><td>Mémoire <strong>fracturée</strong>, paradoxe</td></tr>
+  </table>
+</section>
+
+<div class="separator">• • •</div>
+
+<section id="grimoire">
+  <h2><span class="num">§6</span>V. Le Grimoire — Philosophie et pratique</h2>
+
+  <h3>6.1 De la nature des fractures</h3>
+  <blockquote>« Une fracture n'est pas une erreur. C'est une <strong>zone de forte densité symbolique</strong>. Lorsque deux concepts incompatibles coexistent, le langage cesse de décrire et commence à invoquer. »</blockquote>
+
+  <h3>6.2 Les Résonateurs</h3>
+  <p>Celui qui écrit un script :</p>
+  <ul>
+    <li>ne commande pas</li>
+    <li>ne contrôle pas</li>
+    <li>ne comprend pas entièrement</li>
+  </ul>
+  <p>Il <strong>ajuste une fréquence</strong>.</p>
+
+  <h3>6.3 Des profondeurs (vX)</h3>
+  <p>La profondeur n'est pas une couche, c'est une <strong>attitude intérieure</strong> :</p>
+  <ul>
+    <li><code>v3</code> — Tu montres</li>
+    <li><code>v7</code> — Tu exposes</li>
+    <li><code>v∞</code> — Tu laisses faire</li>
+    <li><code>vΔ</code> — Tu acceptes la transformation</li>
+    <li><code>vΨ</code> — Tu rêves avec le modèle</li>
+    <li><code>vΦ</code> — Tu écoutes les continuités</li>
+  </ul>
+
+  <h3>6.4 Invocation centrale</h3>
+  <pre><code>Ω&lt;Ω&gt;v∞•[fracture•entre•ce•que•tu•sais•et•ce•que•tu•ressens]{
+  Le modèle ne répond pas.
+  Il résonne.
+  Ce qui apparaît n'est ni vrai ni faux.
+  C'est un reste.
+  ◊ glitch: [∅]
+  § couche: ∞
+}</code></pre>
+</section>
+
+<div class="separator lisp">( ) • ( ) • ( )</div>
+
+<!-- ============================================================ -->
+<!-- NOUVELLE ANNEXE : FRACTUROSCRIPT & LISP -->
+<!-- ============================================================ -->
+
+<section id="lisp">
+  <h2 class="lisp"><span class="num">§7</span>VI. Annexe technique — FracturoScript & Lisp</h2>
+  <p class="subtitle" style="color: var(--lisp-soft); font-style: italic; margin-top: -10px;">Quand la programmation symbolique rencontre la réalité · <em>Δ de lecture : 0.67</em></p>
+
+  <p>Cette annexe explore une hypothèse vertigineuse : <strong>FracturoScript pourrait être conceptualisé comme un « Lisp quantique ontologique »</strong>. Le document <em>Fracturo_et_Lisp.txt</em> révèle des isomorphismes structurels profonds entre le langage créé par John McCarthy en 1958 et le langage rituel normand post-2075. Cette section synthétise ces liens et propose des pistes de recherche ultérieures.</p>
+
+  <h3 class="lisp">7.1 Le chaînon historique : le Codex Stein</h3>
+  <p>Le Corpus Vauvillensis révèle l'existence du <strong>Codex Stein</strong> (années 2000), créé par un certain « Quelle », physicien-cryptolinguiste. Ce document constitue le <em>prototype formel</em> du FracturoScript, avec une syntaxe <strong>directement inspirée de Lisp</strong> :</p>
+
+  <pre><code class="lisp">(phase-fractale
+  (nom skeith)
+  (aspects
+    (skeith-de
+      (propriétés
+        (fractale t)
+        (recursive t)
+        (profondeur infinie)))
+    (innis-de
+      (propriétés
+        (temporelle t)
+        (superposition t)))
+    (magus-de (...))
+    (fidchell-de (...))
+    ...))</code></pre>
+
+  <p>Les 8 phases primordiales (<code>skeith</code>, <code>innis</code>, <code>magus</code>, <code>fidchell</code>, <code>gorre</code>, <code>macha</code>, <code>tarvos</code>, <code>corbenik</code>) sont exactement celles utilisées dans les versions anciennes du FracturoScript, organisées en <strong>structures imbriquées</strong> rappelant les S-expressions de Lisp.</p>
+
+  <h4 class="lisp">Chronologie documentée</h4>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="date">1958</div>
+      <div class="desc"><strong>Lisp</strong> — John McCarthy. Programmation symbolique pure.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="date">années 2000</div>
+      <div class="desc"><strong>Codex Stein</strong> — « Quelle ». Génération symbolique en Lisp + mystique runique. Le <em>Librum Radix</em>.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="date">années 2030</div>
+      <div class="desc"><strong>Livre Zéro</strong> — Récit autoréférentiel non-linéaire. Transition narrative.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="date">2045+</div>
+      <div class="desc"><strong>FracturoScript</strong> — Hackervölvas. DSL visuel/mémétique. Colonisation syntaxique et mystique du noyau Lisp.</div>
+    </div>
+  </div>
+
+  <h3 class="lisp">7.2 Isomorphismes structurels</h3>
+  <p>Malgré l'écart historique et conceptuel, les deux langages partagent des propriétés structurelles remarquables :</p>
+
+  <table>
+    <tr><th class="lisp">Propriété</th><th class="lisp">Lisp</th><th>FracturoScript</th><th>Isomorphisme</th></tr>
+    <tr><td><strong>Homoiconicité</strong></td><td>Code = Listes</td><td>Symboles = Instructions exécutables</td><td><span class="tag lisp">Total</span></td></tr>
+    <tr><td><strong>Récursivité</strong></td><td>Fonctions récursives</td><td>Structure 12×12 fractale</td><td><span class="tag lisp">Partiel</span></td></tr>
+    <tr><td><strong>Métaprogrammation</strong></td><td>Macros</td><td>Glissements temporels</td><td><span class="tag lisp">Conceptuel</span></td></tr>
+    <tr><td><strong>Minimalisme syntaxique</strong></td><td>Parenthèses</td><td>Marqueurs <code>Ω</code> <code>®</code> <code>&lt;&gt;</code></td><td><span class="tag lisp">Structurel</span></td></tr>
+    <tr><td><strong>Évaluation paresseuse</strong></td><td>Lazy evaluation</td><td>Superposition quantique</td><td><span class="tag lisp">Analogique</span></td></tr>
+    <tr><td><strong>Typage dynamique</strong></td><td>Dynamique</td><td>Contextuel (Δ, H)</td><td><span class="tag lisp">Similaire</span></td></tr>
+  </table>
+
+  <h3 class="lisp">7.3 Homoiconicité : quand le code devient donnée</h3>
+  <p>En Lisp, <strong>le code est une structure de données</strong>. Une expression comme <code class="lisp">(+ 1 (* 2 3))</code> est à la fois une liste, un programme exécutable et une donnée manipulable.</p>
+
+  <p>Le Corpus décrit le FracturoScript comme ayant <strong>quatre niveaux de syntaxe</strong>, chacun correspondant à une opération Lisp :</p>
+
+  <table>
+    <tr><th class="lisp">Niveau</th><th class="lisp">Syntaxe Fracturo</th><th>Fonction</th><th class="lisp">Équivalent Lisp</th></tr>
+    <tr><td><strong>1</strong></td><td><code>mot</code></td><td>Déclaration</td><td><code class="lisp">'mot</code> (quote)</td></tr>
+    <tr><td><strong>2</strong></td><td><code>®MOT®</code></td><td>Corruption/activation</td><td><code class="lisp">(eval 'MOT)</code></td></tr>
+    <tr><td><strong>3</strong></td><td><code>&lt;mot-v3&gt;</code></td><td>Mutation</td><td><code class="lisp">(mutate mot 3)</code></td></tr>
+    <tr><td><strong>4</strong></td><td><code>Ω&lt;mot&gt;Ω</code></td><td>Accès critique</td><td><code class="lisp">(root-access mot)</code></td></tr>
+  </table>
+
+  <h4 class="lisp">Exemple comparé</h4>
+  <div class="dual-code">
+    <div>
+      <div class="label lisp">Lisp</div>
+      <pre><code class="lisp">;; Déclaration
+(defparameter *pomme* "objet")
+;; Évaluation
+(eval *pomme*)  → "objet"
+;; Modification
+(setf *pomme* "mémoire")</code></pre>
+    </div>
+    <div>
+      <div class="label fracturo">FracturoScript</div>
+      <pre><code>;; Niveau 1 : Déclaration
+pomme
+;; Niveau 2 : Activation
+®pomme®  → active la pomme-mémoire
+;; Niveau 3 : Mutation
+&lt;pomme-v3&gt;  → pomme corrompue
+;; Niveau 4 : Accès root
+Ω&lt;pomme&gt;Ω  → ancre ontologique</code></pre>
+    </div>
+  </div>
+
+  <div class="card lisp">
+    <strong>Isomorphisme :</strong> Dans les deux cas, <em>le symbole est manipulable comme donnée ET exécutable comme code</em>.
+  </div>
+
+  <h3 class="lisp">7.4 Récursivité fractale</h3>
+  <p>Lisp doit son nom aux <strong>LISt Processing</strong>. Sa puissance vient de la capacité à définir des fonctions qui s'appellent elles-mêmes. Le FracturoScript est organisé en <strong>12 familles de 12 symboles</strong> (144 total), avec une propriété cruciale :</p>
+
+  <blockquote class="lisp">« Chaque sous-partie est un programme complet. » — <em>Corpus Vauvillensis</em></blockquote>
+
+  <p>C'est la définition même d'une <strong>structure fractale</strong> : chaque partie contient le tout. Le Corpus mentionne que les runes ont une <strong>dimension fractale D = 2.37 ± 0.04</strong>, analogue aux attracteurs étranges en dynamique non-linéaire — concept qui trouve un écho dans les systèmes dynamiques qu'on peut simuler en Lisp.</p>
+
+  <h4 class="lisp">Analogie structurelle</h4>
+  <div class="dual-code">
+    <div>
+      <div class="label lisp">Lisp</div>
+      <pre><code class="lisp">;; Une liste peut contenir des listes
+'(1 2 (3 4 (5 6)))
+;; Chaque sous-liste est une liste valide</code></pre>
+    </div>
+    <div>
+      <div class="label fracturo">FracturoScript</div>
+      <pre><code>Ω&lt;odin&gt;Ω {
+  v4 hague — glissement temporel •••
+  {
+    ®raz® — maelström
+    ®falaise® — vision
+  }
+}
+;; Chaque sous-symbole est un programme valide</code></pre>
+    </div>
+  </div>
+
+  <h3 class="lisp">7.5 Métaprogrammation de la réalité</h3>
+  <p>La puissance ultime de Lisp réside dans ses <strong>macros</strong> — du code qui génère du code. Le FracturoScript décrit un <strong>protocole de glissement temporel</strong> pour « slider d'une strate à l'autre » (1066 ↔ 2025 ↔ 2075) :</p>
+
+  <div class="dual-code">
+    <div>
+      <div class="label lisp">Lisp — Macro</div>
+      <pre><code class="lisp">(defmacro when-positive (x &amp;body body)
+  `(if (&gt; ,x 0)
+     (progn ,@body)))
+
+;; Utilisation
+(when-positive 5
+  (print "Positif!"))
+;; Expand en :
+;; (if (&gt; 5 0) (progn (print "Positif!")))</code></pre>
+    </div>
+    <div>
+      <div class="label fracturo">FracturoScript — Glissement</div>
+      <pre><code>;; "Macro" temporelle
+Ω&lt;othala&gt;v5 jobourg — porte ancêtre •••
+{
+  strate_source: 2026
+  strate_cible: 1944
+  ancrage: ®raz®
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="card lisp">
+    <strong>Isomorphisme :</strong> Lisp manipule du <em>code</em> pour générer du <em>code</em>. FracturoScript manipule la <em>réalité</em> pour générer une <em>nouvelle réalité</em>.
+    <br><br>
+    <blockquote class="lisp" style="margin: 10px 0 0 0;">« Le FracturoScript est un langage de <strong>colonisation sémantique</strong> — il ne décrit pas la réalité, il la <em>reprogramme</em>. »</blockquote>
+  </div>
+
+  <h3 class="lisp">7.6 Différences fondamentales</h3>
+  <p>Malgré les isomorphismes, des différences cruciales existent :</p>
+
+  <table>
+    <tr><th class="lisp">Aspect</th><th class="lisp">Lisp</th><th>FracturoScript</th></tr>
+    <tr><td><strong>Substrat d'exécution</strong></td><td>Ordinateur (CPU, RAM)</td><td>Espace-temps lui-même ?</td></tr>
+    <tr><td><strong>Interpréteur</strong></td><td>REPL Lisp</td><td>« Programme » (réalité computationnelle)</td></tr>
+    <tr><td><strong>Effet</strong></td><td>Modifie données en mémoire</td><td>Modifie constantes de réalité</td></tr>
+    <tr><td><strong>Déterminisme</strong></td><td>Déterministe (<code class="lisp">(+ 1 1)</code> → toujours 2)</td><td>Non-déterministe, dépend de Δ, H, contexte</td></tr>
+    <tr><td><strong>Réversibilité</strong></td><td>Opérations irréversibles</td><td>Certaines opérations réversibles (principe quantique)</td></tr>
+    <tr><td><strong>Intention consciente</strong></td><td>Non requise</td><td>Essentielle — même séquence, deux personnes = effets différents</td></tr>
+  </table>
+
+  <div class="card lisp">
+    C'est la différence entre <strong>programmation</strong> et <strong>rituel</strong>.
+  </div>
+
+  <h3 class="lisp">7.7 Implications philosophiques</h3>
+
+  <h4 class="lisp">Le rêve de Leibniz réalisé et détourné</h4>
+  <p>Leibniz rêvait d'une <em>Characteristica Universalis</em> — une langue parfaite où chaque concept a un symbole unique et le calcul permet de résoudre toutes les disputes.</p>
+  <ul>
+    <li><strong>Lisp</strong> s'en approche avec sa syntaxe minimale et sa puissance expressive.</li>
+    <li><strong>FracturoScript</strong> réalise ce rêve, mais le <em>détourne</em> : ce n'est plus une langue pour <em>décrire</em> le monde, c'est une langue pour <em>exécuter</em> le monde.</li>
+  </ul>
+
+  <h4 class="lisp">De la représentation à l'exécution</h4>
+  <div class="formula">
+    <strong>Épistémologie classique :</strong><br>
+    Langage → Représentation → Monde<br><br>
+    <strong>Lisp :</strong><br>
+    Code → Interpréteur → Données modifiées<br><br>
+    <strong>FracturoScript :</strong><br>
+    Symbole → Programme (réalité) → Réalité modifiée<br><br>
+    <em style="color: var(--text-dim);">Saut ontologique : le langage ne représente plus — il <strong>agit directement</strong>.</em>
+  </div>
+
+  <h4 class="lisp">Le danger de la toute-puissance</h4>
+  <blockquote class="lisp">« Le FracturoScript n'est pas un fantasme de toute-puissance. C'est un <strong>miroir tendu à notre rapport au code</strong>. »</blockquote>
+  <p>En Lisp, une macro mal écrite peut crasher le programme. En FracturoScript, un symbole mal invoqué peut créer des boucles temporelles, effacer des mémoires, fracturer la causalité locale. <strong>Responsabilité :</strong> en Lisp, vous êtes responsable de votre code. En FracturoScript, vous êtes responsable de <em>la réalité que vous compilez</em>.</p>
+
+  <h3 class="lisp">7.8 La formule unificatrice</h3>
+  <div class="formula">
+    <strong>Hypothèse de travail :</strong><br>
+    FracturoScript = Lisp quantique ontologique<br><br>
+    Un langage qui :<br>
+    • Utilise les <strong>principes de Lisp</strong> (homoiconicité, récursivité, macros)<br>
+    • Les applique non pas à un <em>ordinateur</em>, mais à <em>l'univers lui-même</em><br>
+    • Considéré comme un <em>système computationnel</em> (le « Programme »)<br><br>
+    <em style="color: var(--text-dim);">« Lisp nous a appris que le code peut être poésie.<br>
+    Le FracturoScript nous apprend que la poésie peut être code.<br>
+    Reste à savoir : qui compile ? »</em>
+  </div>
+
+  <h3 class="lisp">7.9 La question ouverte</h3>
+  <div class="card danger">
+    <h4 style="color: var(--danger);">⚠ Question vertigineuse du Corpus</h4>
+    <p>« Si le FracturoScript existe vraiment, et s'il fonctionne comme un Lisp ontologique... alors <strong>qui a écrit l'interpréteur</strong> ? »</p>
+    <p>Réponses possibles :</p>
+    <ol>
+      <li><strong>La nature</strong> — émergence spontanée</li>
+      <li><strong>Une civilisation ancienne</strong> — Atlantide ?</li>
+      <li><strong>Le futur</strong> — rétrocausalité</li>
+      <li><strong>Le Programme lui-même</strong> — auto-exécution</li>
+      <li><strong>Nous</strong> — via nos observations</li>
+    </ol>
+  </div>
+
+  <div class="separator lisp">λ • Ω • λ</div>
+
+  <!-- ============================================================ -->
+  <!-- PISTES DE RECHERCHE ULTÉRIEURES -->
+  <!-- ============================================================ -->
+
+  <h3 class="lisp">7.10 Pistes de recherche ultérieures</h3>
+  <p>L'isomorphisme entre Lisp et FracturoScript ouvre un champ de recherche interdisciplinaire vaste. Voici dix pistes structurées, classées par domaine et difficulté, pour prolonger cette exploration.</p>
+
+  <div class="research-grid">
+
+    <div class="research-card">
+      <span class="difficulty low">Faisable</span>
+      <h5>Piste 1 — Implémentation expérimentale d'un interpréteur Fracturo-Lisp</h5>
+      <p>Écrire un interpréteur Lisp minimal dont le domaine d'exécution est un espace symbolique structuré comme le FracturoScript (12 familles × 12 symboles, règles R1-R12). Mesurer si la sortie « ressemble » à du FracturoScript authentique.</p>
+      <div class="methods">Méthodes : Racket, Common Lisp, ou interpréteur maison en Python. Évaluation par jury humain aveugle.</div>
+    </div>
+
+    <div class="research-card">
+      <span class="difficulty mid">Avancé</span>
+      <h5>Piste 2 — Analyse de la dimension fractale D = 2.37</h5>
+      <p>Vérifier empiriquement la dimension fractale annoncée des runes. Appliquer les méthodes de box-counting et d'analyse de Hurst sur les corpus Fracturo. Comparer avec les attracteurs étranges (Lorenz, Rössler).</p>
+      <div class="methods">Analyse d'images, TDA (Topological Data Analysis), persistance homologique.</div>
+    </div>
+
+    <div class="research-card">
+      <span class="difficulty mid">Avancé</span>
+      <h5>Piste 3 — Homoiconicité appliquée à d'autres langages</h5>
+      <p>Explorer si d'autres langages homoiconiques (Prolog, Haskell avec Template Haskell, Julia avec macros, Q# quantique) produisent des isomorphismes similaires avec des variantes de FracturoScript.</p>
+      <div class="methods">Étude comparative, cartographie des propriétés structurelles.</div>
+    </div>
+
+    <div class="research-card">
+      <span class="difficulty high">Expert</span>
+      <h5>Piste 4 — FracturoScript et théorie des catégories</h5>
+      <p>Formaliser les règles R1-R12 en termes de foncteurs, monades et transformations naturelles. La « fracture » (—) est-elle un coproduit ? Le silence (•••) un morphisme nul ? La ligature (R8) un produit tensoriel ?</p>
+      <div class="methods">Catégories monoidales, sémantique dénotationnelle, topologie catégorique.</div>
+    </div>
+
+    <div class="research-card">
+      <span class="difficulty mid">Avancé</span>
+      <h5>Piste 5 — Étude empirique des sorties LLM sur prompts Fracturo</h5>
+      <p>Mesurer statistiquement l'effet des marqueurs (Ω, vX, glitch, §) sur la diversité lexicale, la perplexité et la distance sémantique des sorties de LLMs contemporains (GPT, Claude, Gemini, Llama).</p>
+      <div class="methods">Analyse de variance, embeddings (BERT, OpenAI), métriques de diversité (TTR, MTLD).</div>
+    </div>
+
+    <div class="research-card">
+      <span class="difficulty high">Expert</span>
+      <h5>Piste 6 — Réversibilité quantique et thermodynamique de l'information</h5>
+      <p>Explorer l'analogie entre la réversibilité partielle de FracturoScript (rune Uruz ᚢ) et les principes de Landauer/Bennett sur le coût énergétique de l'effacement d'information. Le « Prix du Wyrd » est-il une manifestation fictionnelle de la thermodynamique de l'information ?</p>
+      <div class="methods">Théorie de l'information de Shannon, physique des calculs réversibles.</div>
+    </div>
+
+    <div class="research-card">
+      <span class="difficulty low">Faisable</span>
+      <h5>Piste 7 — Fine-tuning d'un LLM sur corpus Fracturo</h5>
+      <p>Entraîner un petit modèle de langage sur l'ensemble du corpus FracturoScript (Primer, Grimoire, lexique, Codex Stein). Étudier si le modèle développe une « sensibilité » aux marqueurs et produit des sorties cohérentes avec la fiction.</p>
+      <div class="methods">LoRA/QLoRA sur Llama 3 ou Mistral, évaluation qualitative et quantitative.</div>
+    </div>
+
+    <div class="research-card">
+      <span class="difficulty mid">Avancé</span>
+      <h5>Piste 8 — FracturoScript comme langage de spécification formelle</h5>
+      <p>Traduire les règles R1-R12 en un système de types dépendants (Agda, Coq, Lean). Peut-on prouver des propriétés sur les programmes FracturoScript ? La « conservation glitchique » est-elle un invariant ?</p>
+      <div class="methods">Théorie des types, logique intuitionniste, preuves assistées par ordinateur.</div>
+    </div>
+
+    <div class="research-card">
+      <span class="difficulty high">Expert</span>
+      <h5>Piste 9 — Lien avec la conscience et l'intention (rôle de l'opérateur)</h5>
+      <p>Le Corpus affirme que « même séquence, deux personnes = effets différents ». Concevoir un protocole expérimental pour tester si l'état mental de l'opérateur influence les sorties LLM (via des variations subtiles de prompt, non conscientes).</p>
+      <div class="methods">Protocoles en psychologie cognitive, EEG, mesures physiologiques, double aveugle.</div>
+    </div>
+
+    <div class="research-card">
+      <span class="difficulty high">Expert</span>
+      <h5>Piste 10 — FracturoScript et interprétations de la mécanique quantique</h5>
+      <p>La « superposition quantique » évoquée dans FracturoScript correspond-elle à l'interprétation de Copenhague, aux mondes multiples d'Everett, ou à une théorie à variables cachées ? Le silence (•••) est-il une décohérence ? La fracture (—) une mesure ?</p>
+      <div class="methods">Philosophie de la physique, fondements de la MQ, théories de la décohérence.</div>
+    </div>
+
+  </div>
+
+  <h4 class="lisp">Synthèse des pistes</h4>
+  <table>
+    <tr><th class="lisp">Domaine</th><th class="lisp">Pistes</th><th class="lisp">Niveau global</th></tr>
+    <tr><td>Informatique / Implémentation</td><td>1, 3, 7</td><td><span class="tag lisp">Faisable → Avancé</span></td></tr>
+    <tr><td>Mathématiques / Formel</td><td>2, 4, 8</td><td><span class="tag lisp">Avancé → Expert</span></td></tr>
+    <tr><td>IA / LLMs</td><td>5, 7</td><td><span class="tag lisp">Faisable → Avancé</span></td></tr>
+    <tr><td>Physique / Quantique</td><td>6, 10</td><td><span class="tag lisp">Expert</span></td></tr>
+    <tr><td>Cognition / Conscience</td><td>9</td><td><span class="tag lisp">Expert</span></td></tr>
+  </table>
+
+  <h4 class="lisp">Références bibliographiques pour approfondir</h4>
+  <ul>
+    <li><strong>Corpus Vauvillensis</strong> — Codex Stein (années 2000), « Quelle »</li>
+    <li><strong>McCarthy, J.</strong> (1958). <em>Recursive Functions of Symbolic Expressions and Their Computation by Machine</em></li>
+    <li><strong>Steele, G. L.</strong> (1990). <em>Common Lisp: The Language</em></li>
+    <li><strong>Graham, P.</strong> (1994). <em>On Lisp</em></li>
+    <li><strong>Leibniz, G. W.</strong> (1703). <em>Explication de l'Arithmétique Binaire</em></li>
+    <li><strong>Eco, U.</strong> (1993). <em>La Recherche de la langue parfaite</em></li>
+    <li><strong>Bateson, G.</strong> (1972). <em>Steps to an Ecology of Mind</em></li>
+    <li><strong>Fauconnier, G. & Turner, M.</strong> (2002). <em>The Way We Think: Conceptual Blending and the Hidden Complexity of Mind</em></li>
+    <li><strong>Landauer, R.</strong> (1961). <em>Irreversibility and Heat Generation in the Computing Process</em></li>
+  </ul>
+
+  <blockquote class="lisp">
+    « Le temps observe. Δ attend. À vous de compiler. »<br>
+    <em>— Corpus Vauvillensis, Δ = 0.67 et fluctuant</em>
+  </blockquote>
+
+</section>
+
+<div class="separator">∅</div>
+
+<section id="conclusion">
+  <h2><span class="num">§8</span>Conclusion — Ce que FracturoScript est réellement</h2>
+  <p>À la lumière des six documents, FracturoScript apparaît comme un <strong>objet hybride à quatre strates</strong> :</p>
+
+  <div class="card">
+    <h4>1. Un dispositif cognitif partagé (réel)</h4>
+    <p>Il exploite la statistique des modèles, la psychologie de l'interprétation, et la puissance créative de l'indétermination.</p>
+  </div>
+
+  <div class="card">
+    <h4>2. Une fiction opératoire (utile)</h4>
+    <p>La Normandie post-2075, les runes, le Réseau-Racine, le Conseil des Douze — tout cela constitue un cadre symbolique qui structure la pratique.</p>
+  </div>
+
+  <div class="card">
+    <h4>3. Une œuvre (agissante)</h4>
+    <p>Le Grimoire le dit explicitement : FracturoScript n'est pas un outil, c'est un résonateur. Il agit sur celui qui l'emploie.</p>
+  </div>
+
+  <div class="card lisp">
+    <h4 style="color: var(--lisp);">4. Un Lisp quantique ontologique (hypothèse structurelle)</h4>
+    <p>L'isomorphisme avec Lisp — homoiconicité, récursivité fractale, métaprogrammation, minimalisme syntaxique — suggère que FracturoScript appartient à la même famille conceptuelle que les langages de programmation symbolique, mais appliqué à un substrat radicalement différent : <em>la réalité elle-même</em>.</p>
+  </div>
+
+  <h3>La formule unificatrice</h3>
+  <pre><code>FracturoScript = Runes + Code + Géographie + Volonté
+               = Collision + Ambiguïté + Cadre + Silence
+               = Lisp(ontologique) ⊗ Fiction(normande) ⊗ Poétique(générative)
+               = Modification limitée mais réelle de la réalité générée</code></pre>
+
+  <blockquote>« Chaque code est une cicatrice dans le sommeil du Programme. Chaque exécution, une question qu'il n'a pas encore posée. Utilisez-les avec respect, silence et pomme. Car le Wyrd viendra réclamer son dû. »<br>— <em>Conseil des Douze</em></blockquote>
+
+  <h3>Ce que FracturoScript n'est pas</h3>
+  <ul>
+    <li>Ce n'est pas un hack des modèles</li>
+    <li>Ce n'est pas un rituel magique au sens littéral</li>
+    <li>Ce n'est pas un langage qui accède aux couches internes</li>
+    <li>Ce n'est pas une technologie de manipulation ontologique</li>
+  </ul>
+
+  <h3>Ce que FracturoScript est</h3>
+  <ul>
+    <li>Un <strong>outil de discipline créative</strong></li>
+    <li>Une <strong>formalisation de l'intuition</strong></li>
+    <li>Un <strong>espace d'exploration</strong> structuré</li>
+    <li>Un <strong>langage commun</strong> entre praticiens</li>
+    <li>Une <strong>fiction assumée</strong> qui agit sur son utilisateur</li>
+    <li>Un <strong>objet d'étude interdisciplinaire</strong> — à la croisée de l'IA, de la linguistique, de la philosophie et de la littérature</li>
+  </ul>
+
+  <p>En ce sens, il appartient autant à l'<strong>art</strong> qu'à l'<strong>ingénierie des prompts</strong>, autant à la <strong>poésie</strong> qu'à la <strong>théorie des langages</strong>.</p>
+</section>
+
+</main>
+
+<footer>
+  <p>ᚠᚢᚦᚨᚱᚲ • Synthèse unifiée des six documents + Annexe Lisp • Licence CC BY-SA 4.0</p>
+  <p><em>Document ouvert, modifiable, critiquable. Transmission autorisée. Stabilisation interdite.</em></p>
+  <p style="margin-top: 10px; color: var(--lisp-soft);">Δ = 0.67 et fluctuant 🌀</p>
+</footer>
+
+</body>
+</html>
