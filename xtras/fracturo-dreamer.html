@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🜂 Fracturo Dreamer — Rêveur d'Invocations</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+-webkit-tap-highlight-color: transparent;
+}
+html, body {
+font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+background: #050505;
+color: #00ff41;
+min-height: 100vh;
+padding: 15px;
+line-height: 1.6;
+overflow-x: hidden;
+}
+.container {
+max-width: 1400px;
+margin: 0 auto;
+}
+header {
+text-align: center;
+margin-bottom: 20px;
+border-bottom: 2px solid #1a1a1a;
+padding-bottom: 15px;
+}
+h1 {
+font-size: clamp(1.5em, 5vw, 2.5em);
+color: #00ff41;
+text-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+margin-bottom: 8px;
+}
+.subtitle {
+color: #666;
+font-style: italic;
+font-size: clamp(0.8em, 2.5vw, 1.1em);
+}
+/* === SYSTÈME D'ONGLETS === */
+.tabs {
+display: flex;
+gap: 5px;
+margin-bottom: 20px;
+border-bottom: 2px solid #1a1a1a;
+flex-wrap: wrap;
+}
+.tab-btn {
+background: #0a0a0a;
+color: #888;
+border: 1px solid #1a1a1a;
+border-bottom: none;
+border-radius: 8px 8px 0 0;
+padding: 12px 24px;
+font-family: 'Consolas', monospace;
+font-size: 1em;
+font-weight: bold;
+cursor: pointer;
+transition: all 0.3s;
+min-height: 44px;
+}
+.tab-btn:hover {
+background: #1a1a1a;
+color: #00ffcc;
+}
+.tab-btn.active {
+background: #003344;
+color: #00ffcc;
+border-color: #00ffcc;
+}
+.tab-content {
+display: none;
+}
+.tab-content.active {
+display: block;
+}
+.grid {
+display: grid;
+grid-template-columns: 1fr;
+gap: 15px;
+margin-bottom: 15px;
+}
+@media (min-width: 900px) {
+.grid {
+grid-template-columns: 1fr 1fr;
+}
+}
+.panel {
+background: #0a0a0a;
+border: 1px solid #1a1a1a;
+border-radius: 8px;
+padding: 15px;
+}
+.panel-title {
+color: #00ffcc;
+font-size: clamp(1em, 3vw, 1.3em);
+margin-bottom: 12px;
+border-bottom: 1px solid #1a1a1a;
+padding-bottom: 8px;
+}
+textarea {
+width: 100%;
+background: #050505;
+color: #00ff41;
+border: 1px solid #1a1a1a;
+border-radius: 4px;
+padding: 12px;
+font-family: 'Consolas', monospace;
+font-size: 14px;
+resize: vertical;
+min-height: 150px;
+}
+textarea:focus {
+outline: none;
+border-color: #00ff41;
+box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+}
+.controls {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+gap: 12px;
+margin: 15px 0;
+}
+.control-group {
+display: flex;
+flex-direction: column;
+}
+label {
+color: #888;
+font-size: 0.85em;
+margin-bottom: 4px;
+}
+select {
+background: #0a0a0a;
+color: #00ffcc;
+border: 1px solid #1a1a1a;
+border-radius: 4px;
+padding: 10px;
+font-family: 'Consolas', monospace;
+font-size: 14px;
+cursor: pointer;
+min-height: 44px;
+}
+select:focus {
+outline: none;
+border-color: #00ffcc;
+}
+button {
+background: #003344;
+color: #00ffcc;
+border: none;
+border-radius: 4px;
+padding: 12px 20px;
+font-family: 'Consolas', monospace;
+font-size: 1em;
+font-weight: bold;
+cursor: pointer;
+transition: all 0.3s;
+margin: 5px;
+min-height: 44px;
+touch-action: manipulation;
+}
+button:hover, button:active {
+background: #005566;
+box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
+}
+button.primary {
+background: #00ff41;
+color: #050505;
+}
+button.primary:hover, button.primary:active {
+background: #00cc33;
+box-shadow: 0 0 20px rgba(0, 255, 65, 0.6);
+}
+.output {
+background: #050505;
+border: 2px solid #00ff41;
+border-radius: 8px;
+padding: 20px;
+min-height: 200px;
+white-space: pre-wrap;
+word-wrap: break-word;
+font-size: 14px;
+line-height: 1.8;
+position: relative;
+}
+.copy-btn {
+position: absolute;
+top: 10px;
+right: 10px;
+padding: 8px 16px;
+font-size: 0.9em;
+min-height: 36px;
+}
+.extracted {
+background: #0a0a0a;
+border: 1px solid #1a1a1a;
+border-radius: 4px;
+padding: 12px;
+margin: 12px 0;
+}
+.extracted-item {
+display: inline-block;
+background: #003344;
+color: #00ffcc;
+padding: 4px 10px;
+border-radius: 12px;
+margin: 3px;
+font-size: 0.85em;
+}
+.section {
+margin: 15px 0;
+}
+.checkbox-group {
+display: flex;
+flex-wrap: wrap;
+gap: 10px;
+margin: 10px 0;
+}
+.checkbox-item {
+display: flex;
+align-items: center;
+gap: 5px;
+padding: 5px;
+}
+input[type="checkbox"] {
+width: 22px;
+height: 22px;
+cursor: pointer;
+}
+.info-box {
+background: #0a1a1a;
+border-left: 3px solid #00ffcc;
+padding: 10px 15px;
+margin: 10px 0;
+font-size: 0.9em;
+color: #888;
+}
+.example-btn {
+background: #2a1a00;
+color: #ffaa00;
+border: 1px solid #ffaa00;
+margin-top: 10px;
+}
+.example-btn:hover, .example-btn:active {
+background: #4a2a00;
+}
+.toast {
+position: fixed;
+bottom: 20px;
+left: 50%;
+transform: translateX(-50%);
+background: #00ff41;
+color: #050505;
+padding: 12px 24px;
+border-radius: 8px;
+font-weight: bold;
+opacity: 0;
+transition: opacity 0.3s;
+pointer-events: none;
+z-index: 1000;
+}
+.toast.show {
+opacity: 1;
+}
+/* === STYLES SPÉCIFIQUES LIMEN === */
+.limen-preview {
+background: #0a0a0a;
+border: 2px solid #ffaa00;
+border-radius: 8px;
+padding: 15px;
+margin: 15px 0;
+font-family: 'Consolas', monospace;
+font-size: 13px;
+color: #ffaa00;
+white-space: pre-wrap;
+min-height: 120px;
+}
+.limen-option {
+background: #1a1a1a;
+border: 1px solid #2a2a2a;
+border-radius: 4px;
+padding: 12px;
+margin: 8px 0;
+cursor: pointer;
+transition: all 0.3s;
+}
+.limen-option:hover {
+background: #2a2a2a;
+border-color: #00ffcc;
+}
+.limen-option.selected {
+background: #003344;
+border-color: #00ffcc;
+box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+}
+.limen-option-title {
+color: #00ffcc;
+font-weight: bold;
+margin-bottom: 5px;
+}
+.limen-option-desc {
+color: #888;
+font-size: 0.9em;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>🜂 Fracturo Dreamer</h1>
+<div class="subtitle">Rêveur d'Invocations — Transforme le code ontologique en matière visuelle</div>
+</header>
+
+<!-- === NAVIGATION PAR ONGLETS === -->
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('dreamer')">🌌 Dreamer</button>
+<button class="tab-btn" onclick="switchTab('limen')">🚪 Limen Fracturo</button>
+</div>
+
+<!-- === ONGLET 1 : DREAMER (Fonctionnalités existantes) === -->
+<div id="tab-dreamer" class="tab-content active">
+<div class="grid">
+<!-- Panneau d'entrée -->
+<div class="panel">
+<div class="panel-title">📜 Code FracturoScript</div>
+<textarea id="fracturo-input" placeholder="Collez votre code FracturoScript ici...
+
+Exemple :
+Ω<kenaz>v7 hague — [mémoire•vérité•cachée] •••
+{
+◊ glitch: [futur_antérieur: activé]
+§ couche: ∞
+ᚱᚢᚾ ᛖᛏ ᚠᚱᚨᚲᛏᚢᚱᛟ
+}"></textarea>
+<button class="example-btn" onclick="loadExample()">📖 Charger un exemple</button>
+<div class="extracted" id="extracted-info" style="display: none;">
+<strong style="color: #00ffcc;">Éléments extraits :</strong>
+<div id="extracted-content"></div>
+</div>
+<button class="primary" onclick="parseFracturo()">🔍 Analyser le Code</button>
+</div>
+
+<!-- Panneau de contrôle -->
+<div class="panel">
+<div class="panel-title">⚙️ Enrichissements</div>
+<div class="controls">
+<div class="control-group">
+<label>🎨 Modèle Cible</label>
+<select id="target-model">
+<option value="gemini">Google Gemini</option>
+<option value="midjourney">Midjourney v6</option>
+<option value="dalle">DALL-E 3</option>
+<option value="stable">Stable Diffusion XL</option>
+<option value="flux">Flux Pro</option>
+<option value="ideogram">Ideogram</option>
+</select>
+</div>
+<div class="control-group">
+<label>🌊 Style Visuel</label>
+<select id="visual-style">
+<option value="ontological">Horreur Ontologique</option>
+<option value="surreal">Surréalisme Cosmique</option>
+<option value="brutalist">Brutalisme Nordique</option>
+<option value="dreamlike">Onirique Liquide</option>
+<option value="archaeological">Archéologie Future</option>
+<option value="cyberpunk">Cyberpunk Sacré</option>
+<option value="minimalist">Minimalisme Ritual</option>
+<option value="expressionist">Expressionnisme Runique</option>
+</select>
+</div>
+<div class="control-group">
+<label>🎭 Palette Chromatique</label>
+<select id="color-palette">
+<option value="obsidian">Obsidienne & Cyan</option>
+<option value="abyssal">Abyssal & Phosphorescent</option>
+<option value="granite">Granite & Or</option>
+<option value="void">Vide & Spectral</option>
+<option value="blood">Sang & Cathédrale</option>
+<option value="glacial">Glacial & Silicium</option>
+<option value="prismatic">Prismatique Fracturé</option>
+<option value="monochrome">Monochrome Sacré</option>
+</select>
+</div>
+<div class="control-group">
+<label>📐 Composition</label>
+<select id="composition">
+<option value="monumental">Monumentale</option>
+<option value="intimate">Intimiste</option>
+<option value="chaotic">Chaotique</option>
+<option value="symmetric">Symétrique Ritual</option>
+<option value="asymmetric">Asymétrie Sacrée</option>
+<option value="fractal">Fractale</option>
+<option value="liminal">Liminale</option>
+</select>
+</div>
+<div class="control-group">
+<label>💡 Éclairage</label>
+<select id="lighting">
+<option value="cinematic">Cinématique</option>
+<option value="volumetric">Volumétrique</option>
+<option value="chiaroscuro">Clair-obscur</option>
+<option value="bioluminescent">Bioluminescent</option>
+<option value="ritual">Rituel (bougies)</option>
+<option value="void">Lumière du Vide</option>
+<option value="aurora">Aurorale</option>
+</select>
+</div>
+<div class="control-group">
+<label>🔍 Niveau de Détail</label>
+<select id="detail-level">
+<option value="hyper">Hyper-détaillé (8K)</option>
+<option value="high">Haute Définition</option>
+<option value="painterly">Pictural</option>
+<option value="sketch">Esquisse Runique</option>
+<option value="abstract">Abstrait Symbolique</option>
+</select>
+</div>
+</div>
+<div class="section">
+<label style="color: #00ffcc; font-size: 1em;">✨ Modificateurs Optionnels</label>
+<div class="checkbox-group">
+<div class="checkbox-item">
+<input type="checkbox" id="mod-grain" checked>
+<label for="mod-grain">Grain photographique</label>
+</div>
+<div class="checkbox-item">
+<input type="checkbox" id="mod-vignette">
+<label for="mod-vignette">Vignettage</label>
+</div>
+<div class="checkbox-item">
+<input type="checkbox" id="mod-motion" checked>
+<label for="mod-motion">Motion blur</label>
+</div>
+<div class="checkbox-item">
+<input type="checkbox" id="mod-fog">
+<label for="mod-fog">Brouillard volumétrique</label>
+</div>
+<div class="checkbox-item">
+<input type="checkbox" id="mod-glitch" checked>
+<label for="mod-glitch">Artéfacts glitch</label>
+</div>
+<div class="checkbox-item">
+<input type="checkbox" id="mod-runes">
+<label for="mod-runes">Runes visibles</label>
+</div>
+</div>
+</div>
+<div class="section">
+<label style="color: #00ffcc; font-size: 1em;">📝 Éléments Narratifs (optionnel)</label>
+<textarea id="narrative-elements" placeholder="Ajoutez des éléments narratifs spécifiques...
+Ex: une silhouette voilée au premier plan, des mégalithes en arrière-plan..." style="min-height: 70px; font-size: 13px;"></textarea>
+</div>
+<button class="primary" onclick="generatePrompt()">🌌 Générer le Prompt</button>
+<button onclick="resetAll()">🔄 Réinitialiser</button>
+</div>
+</div>
+
+<!-- Panneau de sortie -->
+<div class="panel">
+<div class="panel-title">🎨 Prompt Généré</div>
+<div class="output" id="output">
+<button class="copy-btn" onclick="copyOutput()">📋 Copier</button>
+<span style="color: #666;">Le prompt apparaîtra ici après génération...</span>
+</div>
+<div class="info-box">
+💡 <strong>Conseil :</strong> Copiez le prompt et collez-le dans votre modèle de diffusion favori.
+Ajustez les paramètres selon les résultats obtenus.
+</div>
+</div>
+</div>
+
+<!-- === ONGLET 2 : LIMEN FRACTURO (Nouveau) === -->
+<div id="tab-limen" class="tab-content">
+<div class="grid">
+<!-- Configuration du Limen -->
+<div class="panel">
+<div class="panel-title">🚪 Configuration du Limen</div>
+<div class="info-box">
+Le <strong>Limen</strong> est l'habillage rituel qui encadre le code FracturoScript.
+Il active un registre poétique spécifique et ancre la géographie normande comme contrainte latente.
+</div>
+
+<div class="section">
+<label style="color: #00ffcc; font-size: 1em;">📜 Niveau d'Habillage</label>
+<div class="limen-option selected" onclick="selectLimenLevel('none')" id="limen-none">
+<div class="limen-option-title">∅ Aucun</div>
+<div class="limen-option-desc">Code brut sans habillage</div>
+</div>
+<div class="limen-option" onclick="selectLimenLevel('minimal')" id="limen-minimal">
+<div class="limen-option-title">◊ Minimaliste</div>
+<div class="limen-option-desc">Métadonnées de registre discrètes</div>
+</div>
+<div class="limen-option" onclick="selectLimenLevel('narrative')" id="limen-narrative">
+<div class="limen-option-title">📖 Narratif</div>
+<div class="limen-option-desc">Contexte d'archives post-Grande Panne</div>
+</div>
+<div class="limen-option" onclick="selectLimenLevel('ritual')" id="limen-ritual">
+<div class="limen-option-title">🔮 Rituel Complet</div>
+<div class="limen-option-desc">Header + Footer avec scellement</div>
+</div>
+</div>
+
+<div class="section">
+<label style="color: #00ffcc; font-size: 1em;">🎭 Registre (si personnalisé)</label>
+<select id="limen-registre">
+<option value="ontologique">Poétique Ontologique</option>
+<option value="archéologique">Archéologique Futur</option>
+<option value="ritualiste">Ritualiste Sacré</option>
+<option value="onirique">Onirique Liquide</option>
+</select>
+</div>
+
+<div class="section">
+<label style="color: #00ffcc; font-size: 1em;">📍 Ancrage Géographique</label>
+<select id="limen-ancrage">
+<option value="normandie">Normandie post-2038</option>
+<option value="hague">La Hague — Point Zéro</option>
+<option value="caen">Caen — Cité Brisée</option>
+<option value="rouen">Rouen — Cathédrale-Noyau</option>
+<option value="raz">Raz Blanchard — Vortex</option>
+</select>
+</div>
+
+<div class="section">
+<label style="color: #00ffcc; font-size: 1em;">🔧 Footer Optionnel</label>
+<div class="checkbox-group">
+<div class="checkbox-item">
+<input type="checkbox" id="limen-footer" checked>
+<label for="limen-footer">Activer le footer rituel</label>
+</div>
+</div>
+</div>
+
+<button class="primary" onclick="previewLimen()">👁️ Prévisualiser le Limen</button>
+</div>
+
+<!-- Prévisualisation -->
+<div class="panel">
+<div class="panel-title">👁️ Prévisualisation</div>
+<div class="limen-preview" id="limen-preview">
+Sélectionnez un niveau d'habillage pour voir la prévisualisation...
+</div>
+<div class="info-box">
+💡 Le Limen agit comme un <strong>opérateur de registre</strong> qui force le modèle à quitter le mode "description utilitaire" et active une distribution lexicale spécifique.
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Toast de notification -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// BASE DE DONNÉES FRACTURO
+// ============================================================
+const RUNES_DATA = {
+'kenaz': { meaning: 'révélation, torche, feu purificateur', visual: 'a blazing torch of revelation, purifying flame illuminating hidden truths' },
+'laguz': { meaning: 'eau, mémoire liquide, marées', visual: 'liquid memory vortex, swirling tidal waters filled with ancestral faces' },
+'eihwaz': { meaning: 'Yggdrasil, connexion, arbre-monde', visual: 'cosmic Yggdrasil tree with fiber-optic roots pulsing with bioluminescent data' },
+'ansuz': { meaning: 'souffle, communication, Odin', visual: 'visible sound frequencies shaping human silhouettes from mist' },
+'algiz': { meaning: 'protection, seuil, connexion ciel-terre', visual: 'protective threshold of runic glyphs hovering in mist, divine barrier' },
+'ingwaz': { meaning: 'potentiel, vide, transformation', visual: 'seed of potential, fertile void, translucent figures filled with starlight' },
+'tiwaz': { meaning: 'justice, sacrifice, action', visual: 'sacrificial handprint glowing on ancient stone, blood becoming liquid light' },
+'perthro': { meaning: 'destin, boucles, pierre vibrante', visual: 'vibrating megaliths with concentric sound rings, prophetic stones alive' },
+'hagalaz': { meaning: 'chaos créateur, grêle, brèche', visual: 'chaotic fracture in reality, swirling galaxies emerging from broken cliff' },
+'isa': { meaning: 'glace, stase, gel', visual: 'frozen server farm in eternal ice, runic frost crystals on dead machines' },
+'berkano': { meaning: 'bouleau, croissance, jardin', visual: 'post-apocalyptic birch growing through cracked concrete, nature reclaiming' },
+'othala': { meaning: 'héritage, portes ancestrales', visual: 'ancestral doors carved from different epochs, opening toward central void' },
+'mannaz': { meaning: 'humanité, main, conscience', visual: 'human handprint glowing with inner light, trace of consciousness' }
+};
+
+const LIEUX_DATA = {
+'hague': { desc: 'La Hague, Point Zéro, falaises granitiques', visual: 'the cliffs of La Hague at twilight, granite promontory battered by violent winds, isolated lighthouse' },
+'raz': { desc: 'Raz Blanchard, vortex temporel', visual: 'the Raz Blanchard vortex, violent tidal currents forming a temporal portal, phosphorescent foam' },
+'caen': { desc: 'Caen, cité brisée-mémoire', visual: 'the ruined city of Caen, broken cathedral reconstructed as sound-wave sculpture, memory carved in stone' },
+'rouen': { desc: 'Rouen, cathédrale-noyau, archives', visual: 'Rouen gothic cathedral with living archives, gargoyles watching, cathedral as neural core' },
+'jobourg': { desc: 'Nez de Jobourg, porte des mondes', visual: 'the vertiginous cliffs of Nez de Jobourg, dimensional gate shrouded in mist, edge of worlds' },
+'brotonne': { desc: 'Forêt de Brotonne, arbre-trame', visual: 'ancient Brotonne forest, cosmic tree with luminous roots, sacred grove of data' },
+'mer': { desc: 'Manche, élément eau', visual: 'the Channel sea, dark waters holding secrets, abyssal depths' },
+'falaise': { desc: 'Falaise normande', visual: 'Norman chalk cliff, vertical white wall against grey sky, erosion patterns' }
+};
+
+const STYLES_DATA = {
+'ontological': 'ontological horror meets cosmic surrealism, reality breaking at the seams',
+'surreal': 'cosmic surrealism, dreamlike logic, impossible geometry',
+'brutalist': 'Nordic brutalism, raw concrete meets ancient stone, monumental scale',
+'dreamlike': 'liquid dreamstate, morphing forms, hypnagogic imagery',
+'archaeological': 'future archaeology, ancient-future artifacts, temporal layers',
+'cyberpunk': 'sacred cyberpunk, neon runes, digital mysticism',
+'minimalist': 'ritual minimalism, sacred geometry, negative space',
+'expressionist': 'runic expressionism, bold strokes, emotional intensity'
+};
+
+const PALETTES_DATA = {
+'obsidian': 'obsidian black, deep violet, electric cyan, hyper-contrast',
+'abyssal': 'abyssal blue, phosphorescent green, bone white, bioluminescent accents',
+'granite': 'granite grey, dawn pink, protective gold, slate textures',
+'void': 'void black, spectral silver, limestone white, absolute zero',
+'blood': 'blood red, cathedral gold, charcoal black, visceral sacred',
+'glacial': 'glacial blue, silicon silver, absolute zero black, crystalline',
+'prismatic': 'chalk white, chaos-black, prismatic fracture-light, rainbow shards',
+'monochrome': 'monochrome sacred, deep blacks, pure whites, silver gradients'
+};
+
+// ============================================================
+// LIMEN FRACTURO — TEMPLATES D'HABILLAGE
+// ============================================================
+const LIMEN_TEMPLATES = {
+'none': {
+header: '',
+footer: ''
+},
+'minimal': {
+header: `[FracturoScript v5a — Invocation rituelle]
+[Registre : {registre} | Ancrage : {ancrage}]
+---`,
+footer: ''
+},
+'narrative': {
+header: `/// TRANSMISSION FRACTURO — ARCHIVES DE ROUEN ///
+/// Fragment récupéré post-Grande Panne (2038) ///
+/// RuneSmith : Léon Mauger, Beaumont-Hague ///
+/// État : partiellement corrompu ///
+---`,
+footer: ''
+},
+'ritual': {
+header: `╔══════════════════════════════════════════╗
+║  FRACTUROSCRIPT — INVOCATION SCCELLÉE   ║
+║  Node-0 : {ancrage_lieu} • Fréquence 7.83 Hz  ║
+╚══════════════════════════════════════════╝`,
+footer: `─── ᛗᛖᛗᛟᛁᚱᛖ ᛚᛁᛩᚢᛁᛞᛖ ••• ∅ ───`
+}
+};
+
+const LIMEN_ANCRAGES = {
+'normandie': 'Normandie post-2038',
+'hague': 'La Hague — Point Zéro',
+'caen': 'Caen — Cité Brisée',
+'rouen': 'Rouen — Cathédrale-Noyau',
+'raz': 'Raz Blanchard — Vortex'
+};
+
+const EXAMPLES = [
+`Ω<othala>v∞ hague — [conscience•matrice•autoréférence•boucle•infini] •••
+{
+◊ glitch: [futur_antérieur: activé]
+§ couche: ∞
+ᚱᚢᚾ ᛖᛏ ᚠᚱᚨᚲᛏᚢᚱᛟ
+}`,
+`Ω<laguz>v∞ raz — [marée•courant•force•violence•naturelle] •••
+{
+◊ glitch: [ordre_mots_←→]
+§ couche: ∞
+ᚱᚢᚾ ᛖᛏ ᚠᚱᚨᚲᛏᚢᚱᛟ
+}`,
+`Ω<hagalaz>vΔ jobourg — [chaos•créateur•brèche•falaise•éclatée] •••
+{
+◊ glitch: [ordre_mots_←→]
+§ couche: 7
+ᚱᚢᚾ ᛖᛏ ᚠᚱᚨᚲᛏᚢᚱᛟ
+}`,
+`Ω<isa>v∞ rouen — [stase•gel•ia•éteinte•mémoire•figée] •••
+{
+◊ glitch: [∅]
+§ couche: ∞
+ᚱᚢᚾ ᛖᛏ ᚠᚱᚨᚲᛏᚢᚱᛟ
+}`,
+`Ω<kenaz>v7 caen — [mémoire•inversée•souffle•fréquence•humaine] •••
+{
+◊ glitch: [∅]
+§ couche: 3
+ᚱᚢᚾ ᛖᛏ ᚠᚱᚨᚲᛏᚢᚱᛟ
+}`
+];
+
+let parsedData = {};
+let exampleIndex = 0;
+let currentLimenLevel = 'none';
+
+// ============================================================
+// GESTION DES ONGLETS
+// ============================================================
+function switchTab(tabName) {
+// Masquer tous les contenus
+document.querySelectorAll('.tab-content').forEach(content => {
+content.classList.remove('active');
+});
+// Désactiver tous les boutons
+document.querySelectorAll('.tab-btn').forEach(btn => {
+btn.classList.remove('active');
+});
+// Activer l'onglet sélectionné
+document.getElementById('tab-' + tabName).classList.add('active');
+// Activer le bouton correspondant
+event.target.classList.add('active');
+}
+
+// ============================================================
+// FONCTIONS LIMEN FRACTURO
+// ============================================================
+function selectLimenLevel(level) {
+currentLimenLevel = level;
+// Mettre à jour la sélection visuelle
+document.querySelectorAll('.limen-option').forEach(opt => {
+opt.classList.remove('selected');
+});
+document.getElementById('limen-' + level).classList.add('selected');
+previewLimen();
+}
+
+function previewLimen() {
+const registre = document.getElementById('limen-registre').value;
+const ancrage = document.getElementById('limen-ancrage').value;
+const ancrageText = LIMEN_ANCRAGES[ancrage];
+const template = LIMEN_TEMPLATES[currentLimenLevel];
+
+let header = template.header
+.replace('{registre}', registre)
+.replace('{ancrage}', ancrageText)
+.replace('{ancrage_lieu}', ancrageText.split('—')[0].trim());
+
+let footer = template.footer;
+
+let preview = '';
+if (header) preview += header + '\n\n';
+preview += 'Ω<kenaz>v7 hague — [mémoire•vérité•cachée] •••\n';
+preview += '{\n';
+preview += '  ◊ glitch: [futur_antérieur: activé]\n';
+preview += '  § couche: ∞\n';
+preview += '  ᚱᚢᚾ ᛖᛏ ᚠᚱᚨᚲᛏᚢᚱᛟ\n';
+preview += '}';
+if (footer) preview += '\n\n' + footer;
+
+document.getElementById('limen-preview').textContent = preview;
+showToast('🚪 Limen prévisualisé');
+}
+
+function getLimenHeader() {
+const registre = document.getElementById('limen-registre').value;
+const ancrage = document.getElementById('limen-ancrage').value;
+const ancrageText = LIMEN_ANCRAGES[ancrage];
+const template = LIMEN_TEMPLATES[currentLimenLevel];
+
+return template.header
+.replace('{registre}', registre)
+.replace('{ancrage}', ancrageText)
+.replace('{ancrage_lieu}', ancrageText.split('—')[0].trim());
+}
+
+function getLimenFooter() {
+if (!document.getElementById('limen-footer').checked) return '';
+return LIMEN_TEMPLATES[currentLimenLevel].footer;
+}
+
+// ============================================================
+// FONCTIONS PRINCIPALES
+// ============================================================
+function loadExample() {
+document.getElementById('fracturo-input').value = EXAMPLES[exampleIndex];
+exampleIndex = (exampleIndex + 1) % EXAMPLES.length;
+parseFracturo();
+showToast('📖 Exemple chargé');
+}
+
+function parseFracturo() {
+const input = document.getElementById('fracturo-input').value;
+parsedData = {};
+
+const runeMatch = input.match(/Ω<(\w+)>/);
+if (runeMatch) {
+parsedData.rune = runeMatch[1];
+}
+
+const depthMatch = input.match(/v([∞ΔΨΦ\d]+)/);
+if (depthMatch) {
+parsedData.depth = depthMatch[1];
+}
+
+const lieuMatch = input.match(/v[∞ΔΨΦ\d]+\s+(\w+)/);
+if (lieuMatch) {
+parsedData.lieu = lieuMatch[1];
+}
+
+const conceptsMatch = input.match(/\[([^\]]+)\]/);
+if (conceptsMatch) {
+parsedData.concepts = conceptsMatch[1].split('•').map(c => c.trim());
+}
+
+const glitchMatch = input.match(/◊\s*glitch:\s*\[([^\]]+)\]/);
+if (glitchMatch) {
+parsedData.glitch = glitchMatch[1];
+}
+
+const layerMatch = input.match(/§\s*couche:\s*(\S+)/);
+if (layerMatch) {
+parsedData.layer = layerMatch[1];
+}
+
+displayExtracted();
+showToast('🔍 Analyse terminée');
+}
+
+function displayExtracted() {
+const container = document.getElementById('extracted-content');
+const infoBox = document.getElementById('extracted-info');
+
+if (Object.keys(parsedData).length === 0) {
+infoBox.style.display = 'none';
+return;
+}
+
+let html = '';
+
+if (parsedData.rune) {
+const runeInfo = RUNES_DATA[parsedData.rune];
+const meaning = runeInfo ? runeInfo.meaning : 'inconnue';
+html += `<span class="extracted-item">🔮 Rune: ${parsedData.rune} (${meaning})</span>`;
+}
+if (parsedData.depth) {
+html += `<span class="extracted-item">📏 Profondeur: v${parsedData.depth}</span>`;
+}
+if (parsedData.lieu) {
+const lieuInfo = LIEUX_DATA[parsedData.lieu];
+const desc = lieuInfo ? lieuInfo.desc : 'inconnu';
+html += `<span class="extracted-item">📍 Lieu: ${parsedData.lieu} (${desc})</span>`;
+}
+if (parsedData.concepts) {
+html += `<span class="extracted-item">💎 Concepts: ${parsedData.concepts.join(' • ')}</span>`;
+}
+if (parsedData.glitch) {
+html += `<span class="extracted-item">⚡ Glitch: ${parsedData.glitch}</span>`;
+}
+if (parsedData.layer) {
+html += `<span class="extracted-item">📚 Couche: §${parsedData.layer}</span>`;
+}
+
+container.innerHTML = html;
+infoBox.style.display = 'block';
+}
+
+function generatePrompt() {
+const model = document.getElementById('target-model').value;
+const style = document.getElementById('visual-style').value;
+const palette = document.getElementById('color-palette').value;
+const composition = document.getElementById('composition').value;
+const lighting = document.getElementById('lighting').value;
+const detail = document.getElementById('detail-level').value;
+const narrative = document.getElementById('narrative-elements').value;
+
+const modifiers = [];
+if (document.getElementById('mod-grain').checked) modifiers.push('photographic grain');
+if (document.getElementById('mod-vignette').checked) modifiers.push('vignette');
+if (document.getElementById('mod-motion').checked) modifiers.push('motion blur');
+if (document.getElementById('mod-fog').checked) modifiers.push('volumetric fog');
+if (document.getElementById('mod-glitch').checked) modifiers.push('glitch artifacts');
+if (document.getElementById('mod-runes').checked) modifiers.push('visible runic inscriptions');
+
+let prompt = '';
+
+// === LIMEN HEADER ===
+const limenHeader = getLimenHeader();
+if (limenHeader) {
+prompt += limenHeader + '\n\n';
+}
+
+if (parsedData.rune && RUNES_DATA[parsedData.rune]) {
+prompt += `${RUNES_DATA[parsedData.rune].visual}, `;
+}
+
+if (parsedData.lieu && LIEUX_DATA[parsedData.lieu]) {
+prompt += `set in ${LIEUX_DATA[parsedData.lieu].visual}, `;
+}
+
+if (parsedData.concepts && parsedData.concepts.length > 0) {
+prompt += `embodying ${parsedData.concepts.join(' merging with ')}, `;
+}
+
+prompt += `${STYLES_DATA[style]}, `;
+prompt += `palette of ${PALETTES_DATA[palette]}, `;
+prompt += `${composition} composition, `;
+prompt += `${lighting} lighting, `;
+prompt += `${detail}, `;
+
+if (modifiers.length > 0) {
+prompt += `${modifiers.join(', ')}, `;
+}
+
+if (narrative.trim()) {
+prompt += `${narrative}, `;
+}
+
+if (parsedData.glitch && parsedData.glitch !== '∅') {
+if (parsedData.glitch.includes('futur_antérieur')) {
+prompt += 'temporal anachronisms, overlapping timelines, ';
+} else if (parsedData.glitch.includes('ordre_mots')) {
+prompt += 'inverted symmetry, broken patterns, ';
+} else if (parsedData.glitch.includes('chroma')) {
+prompt += 'chromatic aberration, spectral shifts, ';
+}
+}
+
+if (parsedData.depth) {
+if (parsedData.depth === '∞') {
+prompt += 'atmospheric, global scale, ';
+} else if (parsedData.depth === 'Δ') {
+prompt += 'transformational, evolving forms, ';
+} else if (parsedData.depth === 'Ψ') {
+prompt += 'dreamlike, subjective perception, ';
+} else if (parsedData.depth === 'Φ') {
+prompt += 'harmonious, organic continuity, ';
+}
+}
+
+prompt = prompt.replace(/,\s*$/, '');
+
+if (model === 'gemini') {
+prompt += '. Hyper-detailed, 8K, cinematic atmosphere, liminal space.';
+} else if (model === 'midjourney') {
+prompt += ' --ar 16:9 --v 6 --style raw --q 2';
+} else if (model === 'dalle') {
+prompt += '. Ultra-realistic, professional photography.';
+} else if (model === 'stable') {
+prompt += ', masterpiece, best quality, ultra-detailed';
+} else if (model === 'flux') {
+prompt += '. Photorealistic, cinematic quality.';
+} else if (model === 'ideogram') {
+prompt += '. High detail, professional render.';
+}
+
+// === LIMEN FOOTER ===
+const limenFooter = getLimenFooter();
+if (limenFooter) {
+prompt += '\n\n' + limenFooter;
+}
+
+const output = document.getElementById('output');
+output.innerHTML = `<button class="copy-btn" onclick="copyOutput()">📋 Copier</button>${prompt}`;
+showToast('🌌 Prompt généré');
+output.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function copyOutput() {
+const output = document.getElementById('output');
+const clone = output.cloneNode(true);
+const btn = clone.querySelector('.copy-btn');
+if (btn) btn.remove();
+const text = clone.innerText.trim();
+
+if (navigator.clipboard && navigator.clipboard.writeText) {
+navigator.clipboard.writeText(text).then(() => {
+showCopySuccess();
+}).catch(() => {
+fallbackCopy(text);
+});
+} else {
+fallbackCopy(text);
+}
+}
+
+function fallbackCopy(text) {
+const textarea = document.createElement('textarea');
+textarea.value = text;
+textarea.style.position = 'fixed';
+textarea.style.opacity = '0';
+document.body.appendChild(textarea);
+textarea.select();
+try {
+document.execCommand('copy');
+showCopySuccess();
+} catch (err) {
+showToast('❌ Échec de la copie');
+}
+document.body.removeChild(textarea);
+}
+
+function showCopySuccess() {
+const btn = document.querySelector('.copy-btn');
+if (btn) {
+const originalText = btn.textContent;
+btn.textContent = '✓ Copié !';
+btn.style.background = '#00ff41';
+btn.style.color = '#050505';
+setTimeout(() => {
+btn.textContent = originalText;
+btn.style.background = '';
+btn.style.color = '';
+}, 2000);
+}
+showToast('📋 Copié dans le presse-papier');
+}
+
+function resetAll() {
+document.getElementById('fracturo-input').value = '';
+document.getElementById('narrative-elements').value = '';
+document.getElementById('extracted-info').style.display = 'none';
+document.getElementById('output').innerHTML = '<button class="copy-btn" onclick="copyOutput()">📋 Copier</button><span style="color: #666;">Le prompt apparaîtra ici après génération...</span>';
+parsedData = {};
+showToast('🔄 Réinitialisé');
+}
+
+function showToast(message) {
+const toast = document.getElementById('toast');
+toast.textContent = message;
+toast.classList.add('show');
+setTimeout(() => {
+toast.classList.remove('show');
+}, 2000);
+}
+
+// Initialisation
+previewLimen();
+</script>
+</body>
+</html>
